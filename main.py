@@ -4,17 +4,22 @@ import numpy as np
 import csv
 import os
 from datetime import datetime
-#  ----------------------------------------whats app code-----------------------
+#------------------------------Whats App message Code Librarys----------------------------------
 
 import pyautogui as pg
 import webbrowser as web
 import time
 import pandas as pd
 import pywhatkit
-# -----------------------------------end------------------------------
+# -----------------------------------End of code -----------------------------------------------
 video_capture = cv2.VideoCapture(0)
 
-no_list={"Kunal kawate":"91_8767563012","Kunal Paithane":"91_8767563012","shreyas":"91_8788654516","Ritesh":"91_9325721243"}
+
+# ----------------------------Data of students-------------------------------------------------
+no_list={"Kunal kawate":"91_8788654516","Kunal Paithane":"91_8788654516","shreyas":"91_8788654516","Ritesh":"91_8788654516"}
+# ----------------------------End----------------------------------------------------------------
+
+
 jobs_image = face_recognition.load_image_file("photos/kunya.jpg")
 jobs_encoding = face_recognition.face_encodings(jobs_image)[0]
  
@@ -56,7 +61,7 @@ current_date = now.strftime("%Y-%m-%d")
  
 f = open(current_date+'.csv','w+',newline = '')
 lnwriter = csv.writer(f)
-lnwriter.writerow(["LeadNumber","Message"])
+lnwriter.writerow(["Name of Students","Phone No.","Log","Message"])
  
 while True:
     _,frame = video_capture.read()
@@ -96,34 +101,36 @@ while True:
                     name1=no_list[name]
                     print(students)
                     current_time = now.strftime("%H-%M-%S")
-                    lnwriter.writerow([name1,current_time])
+                    lnwriter.writerow([name,name1,"Present","-"])
+
     cv2.imshow("attendence system",frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
- 
+# -------------------change---------------------------
+for item in students:
+    item1=no_list[item]
+    lnwriter.writerow([item,item1,"Absent","Dear Parent "+item+" is absent from college today, if you are unaware of this, please contact the office on 01-12345-789 , Thank You!; Mail From: *Dr. D. Y. Patil Institute Of Technology, Pimpari Pune* "])
+# ---------------------------------------------------
+
 video_capture.release()
 cv2.destroyAllWindows()
 f.close()
 
-# ------------------------------whats code -----------------------------
+# ------------------------------whats code-----------------------------
 
-data = pd.read_csv("2023-05-24.csv")
+data = pd.read_csv(current_date+'.csv')
 data_dict = data.to_dict('list')
-leads = data_dict['LeadNumber']
-messages = data_dict['Message']
-combo = zip(leads,messages)
+student_name_list=data_dict["Name of Students"]
+leads = data_dict["Phone No."]
+messages = data_dict["Message"]
+d_log=data_dict["Log"]
+combo = zip(leads,messages,d_log,student_name_list)
 first = True
-for lead,message in combo:
-    time.sleep(4)
-    pywhatkit.sendwhatmsg_instantly(lead, message,10, tab_close=True)
-    if first:
-        time.sleep(6)
-        first=False
-    width,height = pg.size()
-    pg.click(width/2,height/2)
-    time.sleep(8)
-    pg.press('enter')
-    time.sleep(8)
-    pg.hotkey('ctrl', 'w')
-
+time.sleep(6)
+for lead,message,log,stu_name in combo:
+    if(log == "Absent"):
+        pywhatkit.sendwhatmsg_instantly(lead, message,10,True,10)
+        print("\nMessage has been sent Successfully to "+stu_name)
 # --------------------end code----------------------------------------------------------
+
+print("\n-----------------------------Exit----------------------------\nThank You for using this program.......\n")
